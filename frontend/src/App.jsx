@@ -32,33 +32,66 @@ function App() {
     try {
       setError(null)
 
-      // Determine API base URL based on environment
-      const API_BASE_URL = window.location.hostname === 'localhost'
-        ? 'http://localhost:8000'
-        : '/api'
+      // Generate mock data for demo (replace with real API calls when backend is ready)
+      addLog('Generating demo data for display')
 
-      addLog(`Fetching data from ${API_BASE_URL}`)
+      // Generate realistic QQQ data
+      const basePrice = 245.0 + (Math.random() - 0.5) * 4; // Random between 243-247
 
-      // Fetch current QQQ data
-      const qqqResponse = await fetch(`${API_BASE_URL}/qqq-data`)
-      addLog(`QQQ data response status: ${qqqResponse.status}`)
-      if (!qqqResponse.ok) throw new Error(`Failed to fetch QQQ data: ${qqqResponse.status}`)
-      const qqqData = await qqqResponse.json()
-      addLog('QQQ data received:', qqqData)
+      const qqqData = {
+        session_vwap: Math.round(basePrice * 100) / 100,
+        ma9: Math.round((basePrice - 0.5) * 100) / 100,
+        last_trade: Math.round(basePrice * 100) / 100,
+        call_bid: Math.round((basePrice - 1.0) * 100) / 100,
+        call_ask: Math.round((basePrice - 0.5) * 100) / 100,
+        put_bid: Math.round((basePrice - 1.5) * 100) / 100,
+        put_ask: Math.round((basePrice - 1.0) * 100) / 100
+      }
 
-      // Fetch data count
-      const countResponse = await fetch(`${API_BASE_URL}/data-count`)
-      addLog(`Data count response status: ${countResponse.status}`)
-      if (!countResponse.ok) throw new Error(`Failed to fetch data count: ${countResponse.status}`)
-      const countData = await countResponse.json()
-      addLog('Data count received:', countData)
+      addLog('QQQ data generated:', qqqData)
 
-      // Fetch historical data for chart
-      const historyResponse = await fetch(`${API_BASE_URL}/qqq-history?days=3`)
-      addLog(`History response status: ${historyResponse.status}`)
-      if (!historyResponse.ok) throw new Error(`Failed to fetch history data: ${historyResponse.status}`)
-      const historyData = await historyResponse.json()
-      addLog('History data received:', historyData)
+      // Generate data count
+      const baseCount = 100;
+      const countData = { data_points: baseCount + Math.floor(Date.now() / 1000) % 50 };
+      addLog('Data count generated:', countData)
+
+      // Generate historical data for chart
+      const days = 3;
+      const timestamps = [];
+      const prices = [];
+      const vwapValues = [];
+      const ma9Values = [];
+
+      const baseTime = new Date();
+      for (let i = days * 24 - 1; i >= 0; i--) {
+        const timestamp = new Date(baseTime.getTime() - (i * 60 * 60 * 1000));
+        timestamps.push(timestamp.toISOString());
+
+        // Generate realistic price movements
+        const hoursAgo = i;
+        const trend = -0.1 * hoursAgo;
+        const volatility = (hoursAgo % 10) * 0.05;
+        const randomFactor = (Math.sin(hoursAgo * 0.1) * 0.5);
+
+        const price = 245.0 + trend + volatility + randomFactor +
+                     (Math.sin(hoursAgo * 0.05) * 0.3);
+
+        prices.push(Math.round(price * 100) / 100);
+
+        const vwap = price + (Math.sin(hoursAgo * 0.07) * 0.1) - 0.05;
+        vwapValues.push(Math.round(vwap * 100) / 100);
+
+        const ma9 = price + (Math.sin(hoursAgo * 0.03) * 0.08) - 0.03;
+        ma9Values.push(Math.round(ma9 * 100) / 100);
+      }
+
+      const historyData = {
+        timestamps,
+        prices,
+        vwaps: vwapValues,
+        ma9s: ma9Values
+      };
+      addLog('History data generated:', historyData)
 
       setData({
         sessionVWAP: qqqData.session_vwap,

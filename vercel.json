@@ -4,11 +4,6 @@
   "devCommand": "cd frontend && npm run dev",
   "installCommand": "cd frontend && npm install",
   "framework": "vite",
-  "functions": {
-    "backend/api/*.js": {
-      "runtime": "@vercel/node"
-    }
-  },
   "regions": ["iad1"],
   "outputDirectory": "frontend/dist"
 }
