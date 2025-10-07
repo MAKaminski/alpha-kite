@@ -110,6 +110,89 @@ body {
   border: 1px solid #fecaca;
 }
 
+.logs-toggle {
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.logs-button {
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.logs-button:hover {
+  background-color: #4b5563;
+}
+
+.logs-panel {
+  background-color: #1f2937;
+  color: #f9fafb;
+  margin: 1rem 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.logs-panel h3 {
+  background-color: #374151;
+  margin: 0;
+  padding: 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  border-bottom: 1px solid #4b5563;
+}
+
+.logs-container {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.log-entry {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #374151;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+}
+
+.log-entry:last-child {
+  border-bottom: none;
+}
+
+.log-timestamp {
+  color: #9ca3af;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.log-message {
+  flex: 1;
+  word-wrap: break-word;
+}
+
+.log-error {
+  color: #fca5a5;
+}
+
+.log-info {
+  color: #f9fafb;
+}
+
+.no-logs {
+  text-align: center;
+  color: #9ca3af;
+  padding: 2rem;
+  font-style: italic;
+}
+
 /* Responsive design */
 @media (max-width: 1200px) {
   .header {

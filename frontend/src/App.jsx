@@ -17,26 +17,48 @@ function App() {
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [logs, setLogs] = useState([])
+  const [showLogs, setShowLogs] = useState(false)
+
+  // Add log entry
+  const addLog = (message, type = 'info') => {
+    const timestamp = new Date().toLocaleTimeString()
+    const logEntry = { timestamp, message, type }
+    setLogs(prevLogs => [...prevLogs.slice(-19), logEntry]) // Keep only last 20 logs
+  }
 
   // Fetch data from backend API
   const fetchData = async () => {
     try {
       setError(null)
 
+      // Determine API base URL based on environment
+      const API_BASE_URL = window.location.hostname === 'localhost'
+        ? 'http://localhost:8000'
+        : 'https://backend-4wurip1xp-makaminski1337.vercel.app'
+
+      addLog(`Fetching data from ${API_BASE_URL}`)
+
       // Fetch current QQQ data
-      const qqqResponse = await fetch('http://localhost:8000/qqq-data')
-      if (!qqqResponse.ok) throw new Error('Failed to fetch QQQ data')
+      const qqqResponse = await fetch(`${API_BASE_URL}/qqq-data`)
+      addLog(`QQQ data response status: ${qqqResponse.status}`)
+      if (!qqqResponse.ok) throw new Error(`Failed to fetch QQQ data: ${qqqResponse.status}`)
       const qqqData = await qqqResponse.json()
+      addLog('QQQ data received:', qqqData)
 
       // Fetch data count
-      const countResponse = await fetch('http://localhost:8000/data-count')
-      if (!countResponse.ok) throw new Error('Failed to fetch data count')
+      const countResponse = await fetch(`${API_BASE_URL}/data-count`)
+      addLog(`Data count response status: ${countResponse.status}`)
+      if (!countResponse.ok) throw new Error(`Failed to fetch data count: ${countResponse.status}`)
       const countData = await countResponse.json()
+      addLog('Data count received:', countData)
 
       // Fetch historical data for chart
-      const historyResponse = await fetch('http://localhost:8000/qqq-history?days=3')
-      if (!historyResponse.ok) throw new Error('Failed to fetch history data')
+      const historyResponse = await fetch(`${API_BASE_URL}/qqq-history?days=3`)
+      addLog(`History response status: ${historyResponse.status}`)
+      if (!historyResponse.ok) throw new Error(`Failed to fetch history data: ${historyResponse.status}`)
       const historyData = await historyResponse.json()
+      addLog('History data received:', historyData)
 
       setData({
         sessionVWAP: qqqData.session_vwap,
@@ -50,8 +72,12 @@ function App() {
         historyData: historyData
       })
 
+      addLog('Data update completed successfully')
+
     } catch (err) {
-      setError(err.message)
+      const errorMessage = `Error: ${err.message}`
+      setError(errorMessage)
+      addLog(errorMessage, 'error')
       console.error('Error fetching data:', err)
     } finally {
       setLoading(false)
@@ -60,6 +86,9 @@ function App() {
 
   // Fetch data on component mount and set up polling
   useEffect(() => {
+    addLog('Application starting up...')
+    addLog(`Running in ${window.location.hostname === 'localhost' ? 'development' : 'production'} mode`)
+
     fetchData() // Initial fetch
 
     // Set up polling every 5 seconds
@@ -93,6 +122,35 @@ function App() {
       {error && (
         <div className="error">
           <strong>Error:</strong> {error}
+        </div>
+      )}
+
+      {/* Logs Display Toggle */}
+      <div className="logs-toggle">
+        <button
+          onClick={() => setShowLogs(!showLogs)}
+          className="logs-button"
+        >
+          {showLogs ? 'Hide Logs' : 'Show Logs'}
+        </button>
+      </div>
+
+      {/* Logs Panel */}
+      {showLogs && (
+        <div className="logs-panel">
+          <h3>Application Logs</h3>
+          <div className="logs-container">
+            {logs.length === 0 ? (
+              <div className="no-logs">No logs yet...</div>
+            ) : (
+              logs.map((log, index) => (
+                <div key={index} className={`log-entry log-${log.type}`}>
+                  <span className="log-timestamp">{log.timestamp}</span>
+                  <span className="log-message">{log.message}</span>
+                </div>
+              ))
+            )}
+          </div>
         </div>
       )}
 
