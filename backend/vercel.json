@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "public_api.py",
+      "src": "src/main.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "public_api.py"
+      "dest": "src/main.py"
     }
   ],
   "regions": ["iad1"]
