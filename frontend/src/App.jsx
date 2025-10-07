@@ -4,24 +4,66 @@ import PolynomialWidget from './components/PolynomialWidget'
 
 function App() {
   const [data, setData] = useState({
-    sessionVWAP: '245.67',
-    ma9: '244.89',
-    lastTrade: '245.23',
-    nearestStrike: '245.00',
-    bidAsk: '245.20 / 245.25'
+    sessionVWAP: null,
+    ma9: null,
+    lastTrade: null,
+    callBid: null,
+    callAsk: null,
+    putBid: null,
+    putAsk: null,
+    dataPoints: 0,
+    historyData: null
   })
 
-  // Simulate real-time data updates
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  // Fetch data from backend API
+  const fetchData = async () => {
+    try {
+      setError(null)
+
+      // Fetch current QQQ data
+      const qqqResponse = await fetch('http://localhost:8000/qqq-data')
+      if (!qqqResponse.ok) throw new Error('Failed to fetch QQQ data')
+      const qqqData = await qqqResponse.json()
+
+      // Fetch data count
+      const countResponse = await fetch('http://localhost:8000/data-count')
+      if (!countResponse.ok) throw new Error('Failed to fetch data count')
+      const countData = await countResponse.json()
+
+      // Fetch historical data for chart
+      const historyResponse = await fetch('http://localhost:8000/qqq-history?days=3')
+      if (!historyResponse.ok) throw new Error('Failed to fetch history data')
+      const historyData = await historyResponse.json()
+
+      setData({
+        sessionVWAP: qqqData.session_vwap,
+        ma9: qqqData.ma9,
+        lastTrade: qqqData.last_trade,
+        callBid: qqqData.call_bid,
+        callAsk: qqqData.call_ask,
+        putBid: qqqData.put_bid,
+        putAsk: qqqData.put_ask,
+        dataPoints: countData.data_points,
+        historyData: historyData
+      })
+
+    } catch (err) {
+      setError(err.message)
+      console.error('Error fetching data:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Fetch data on component mount and set up polling
   useEffect(() => {
-    const interval = setInterval(() => {
-      setData(prev => ({
-        sessionVWAP: (parseFloat(prev.sessionVWAP) + (Math.random() - 0.5) * 0.1).toFixed(2),
-        ma9: (parseFloat(prev.ma9) + (Math.random() - 0.5) * 0.1).toFixed(2),
-        lastTrade: (parseFloat(prev.lastTrade) + (Math.random() - 0.5) * 0.1).toFixed(2),
-        nearestStrike: prev.nearestStrike,
-        bidAsk: `${(parseFloat(prev.lastTrade) - 0.05).toFixed(2)} / ${(parseFloat(prev.lastTrade) + 0.05).toFixed(2)}`
-      }))
-    }, 1000)
+    fetchData() // Initial fetch
+
+    // Set up polling every 5 seconds
+    const interval = setInterval(fetchData, 5000)
 
     return () => clearInterval(interval)
   }, [])
@@ -30,8 +72,11 @@ function App() {
     { label: 'Session VWAP', value: data.sessionVWAP, color: '#3b82f6' },
     { label: 'MA9', value: data.ma9, color: '#10b981' },
     { label: 'Last_Trade', value: data.lastTrade, color: '#f59e0b' },
-    { label: 'Nearest Strike', value: data.nearestStrike, color: '#ef4444' },
-    { label: 'Bid/Ask', value: data.bidAsk, color: '#8b5cf6' }
+    { label: 'Call Bid', value: data.callBid, color: '#ef4444' },
+    { label: 'Call Ask', value: data.callAsk, color: '#ec4899' },
+    { label: 'Put Bid', value: data.putBid, color: '#8b5cf6' },
+    { label: 'Put Ask', value: data.putAsk, color: '#06b6d4' },
+    { label: 'Data Points', value: data.dataPoints, color: '#84cc16' }
   ]
 
   return (
@@ -45,8 +90,14 @@ function App() {
         ))}
       </header>
 
+      {error && (
+        <div className="error">
+          <strong>Error:</strong> {error}
+        </div>
+      )}
+
       <main className="main-content">
-        <PolynomialWidget />
+        <PolynomialWidget historyData={data.historyData} loading={loading} />
       </main>
     </div>
   )
