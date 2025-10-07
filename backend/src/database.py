@@ -7,8 +7,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import os
 
-# Database URL - using SQLite for simplicity, can be changed to PostgreSQL for production
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./qqq_data.db")
+# Database URL - using in-memory SQLite for serverless deployment
+# For production with persistence, use PostgreSQL or other cloud database
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///:memory:")
 
 engine = create_engine(
     DATABASE_URL,
