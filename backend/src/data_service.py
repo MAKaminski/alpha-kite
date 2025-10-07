@@ -17,10 +17,43 @@ from schwab_client import SchwabClient
 logger = logging.getLogger(__name__)
 
 class DataService:
-    """Service for handling QQQ data operations"""
+    """Service for handling QQQ data operations with memory management"""
 
     def __init__(self):
         self.schwab_client = SchwabClient()
+        # Memory management: max 10,000 data points (~3.5MB)
+        self.MAX_DATA_POINTS = 10000
+        self.ESTIMATED_BYTES_PER_POINT = 350  # Conservative estimate
+
+    def _manage_memory_usage(self, db: Session) -> None:
+        """Remove oldest data points if memory limit is reached"""
+        try:
+            # Count current data points
+            qqq_count = db.query(QQQData).count()
+            point_count = db.query(DataPoint).count()
+            total_points = qqq_count + point_count
+
+            if total_points >= self.MAX_DATA_POINTS:
+                # Calculate how many points to remove (remove 10% to avoid constant cleanup)
+                points_to_remove = int(self.MAX_DATA_POINTS * 0.1)
+
+                logger.info(f"Memory limit reached ({total_points} points). Removing {points_to_remove} oldest points.")
+
+                # Remove oldest QQQData points
+                oldest_qqq = db.query(QQQData).order_by(QQQData.timestamp).limit(points_to_remove).all()
+                for point in oldest_qqq:
+                    db.delete(point)
+
+                # Remove oldest DataPoint records
+                oldest_points = db.query(DataPoint).order_by(DataPoint.timestamp).limit(points_to_remove).all()
+                for point in oldest_points:
+                    db.delete(point)
+
+                db.commit()
+                logger.info(f"Removed {len(oldest_qqq) + len(oldest_points)} old data points")
+
+        except Exception as e:
+            logger.error(f"Error managing memory usage: {str(e)}")
 
     async def get_current_qqq_data(self, db: Session) -> Dict:
         """Get current QQQ data with calculations"""
@@ -80,6 +113,9 @@ class DataService:
             )
             db.add(price_point)
 
+            # Manage memory after adding data point
+            self._manage_memory_usage(db)
+
             # Note: In-memory database doesn't persist between deployments
             # For production persistence, use PostgreSQL or other cloud database
             db.commit()
@@ -102,11 +138,9 @@ class DataService:
             point_count = db.query(DataPoint).count()
             total = qqq_count + point_count
 
-            # For demo purposes, return a simulated growing count
-            # In production, this would be the actual database count
-            import time
-            base_count = 100  # Simulated base data points
-            return base_count + int(time.time() % 50)  # Varies between 100-150
+            logger.info(f"Current data points: QQQ={qqq_count}, Points={point_count}, Total={total}")
+
+            return total
 
         except Exception as e:
             logger.error(f"Error getting data count: {str(e)}")
