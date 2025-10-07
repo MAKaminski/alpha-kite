@@ -15,6 +15,5 @@
       "dest": "frontend/dist/$1"
     }
   ],
-  "regions": ["iad1"],
-  "functions": {}
+  "regions": ["iad1"]
 }
