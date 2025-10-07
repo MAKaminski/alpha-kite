@@ -4,7 +4,7 @@ function PolynomialWidget({ historyData, loading }) {
   const canvasRef = useRef(null)
 
   useEffect(() => {
-    if (!historyData || loading) return
+    if (!historyData) return
 
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')

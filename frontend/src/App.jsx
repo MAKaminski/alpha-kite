@@ -107,13 +107,15 @@ function App() {
 
       addLog('Data update completed successfully')
 
+      // Set loading to false after data is processed
+      setLoading(false)
+
     } catch (err) {
       const errorMessage = `Error: ${err.message}`
       setError(errorMessage)
       addLog(errorMessage, 'error')
-      console.error('Error fetching data:', err)
-    } finally {
-      setLoading(false)
+      console.error('Error generating data:', err)
+      setLoading(false) // Ensure loading is set to false even on error
     }
   }
 
@@ -188,7 +190,14 @@ function App() {
       )}
 
       <main className="main-content">
-        <PolynomialWidget historyData={data.historyData} loading={loading} />
+        {data.historyData ? (
+          <PolynomialWidget historyData={data.historyData} loading={loading} />
+        ) : (
+          <div className="polynomial-widget">
+            <h2>QQQ Price Chart (Last 3 Days)</h2>
+            <div className="loading">Loading chart data...</div>
+          </div>
+        )}
       </main>
     </div>
   )
