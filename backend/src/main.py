@@ -11,10 +11,10 @@ import logging
 from typing import List, Dict, Any
 
 # Import our modules
-from database import engine, get_db, create_tables
-from models import QQQData, DataPoint
-from schwab_client import SchwabClient
-from data_service import DataService
+from .database import engine, get_db, create_tables
+from .models import QQQData, DataPoint
+from .schwab_client import SchwabClient
+from .data_service import DataService
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

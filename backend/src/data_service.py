@@ -11,8 +11,8 @@ from sqlalchemy import and_, desc
 import pandas as pd
 import numpy as np
 
-from models import QQQData, DataPoint
-from schwab_client import SchwabClient
+from .models import QQQData, DataPoint
+from .schwab_client import SchwabClient
 
 logger = logging.getLogger(__name__)
 
