@@ -35,7 +35,7 @@ function App() {
       // Determine API base URL based on environment
       const API_BASE_URL = window.location.hostname === 'localhost'
         ? 'http://localhost:8000'
-        : 'https://backend-4wurip1xp-makaminski1337.vercel.app'
+        : 'https://backend-git-main-makaminski1337.vercel.app/api'
 
       addLog(`Fetching data from ${API_BASE_URL}`)
 
