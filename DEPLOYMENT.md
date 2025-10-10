@@ -43,6 +43,8 @@ The root `vercel.json` is configured to:
 - Serve the static files from `frontend/dist`
 - Apply security headers
 
+**Note:** Only ONE `vercel.json` file exists at the root level. The duplicate in `frontend/` has been removed to prevent deployment conflicts.
+
 ### 🧪 Test Locally Before Deploying
 
 ```bash
