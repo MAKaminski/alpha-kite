@@ -1,0 +1,51 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "npm",
+            "script": "dev",
+            "path": "frontend/",
+            "problemMatcher": [],
+            "label": "npm: dev",
+            "detail": "Start Vite development server",
+            "isBackground": true,
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "type": "npm",
+            "script": "build",
+            "path": "frontend/",
+            "problemMatcher": [],
+            "label": "npm: build",
+            "detail": "Build production bundle"
+        },
+        {
+            "type": "npm",
+            "script": "preview",
+            "path": "frontend/",
+            "problemMatcher": [],
+            "label": "npm: preview",
+            "detail": "Preview production build"
+        },
+        {
+            "type": "npm",
+            "script": "test",
+            "path": "frontend/",
+            "problemMatcher": [],
+            "label": "npm: test",
+            "detail": "Run tests in watch mode"
+        },
+        {
+            "type": "npm",
+            "script": "test:run",
+            "path": "frontend/",
+            "problemMatcher": [],
+            "label": "npm: test:run",
+            "detail": "Run tests once"
+        }
+    ]
+}
+
