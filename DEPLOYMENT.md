@@ -37,11 +37,18 @@ VITE_SCHWAB_API_SECRET=m5YMEpTk0zluhdYz0kwFaKQ98VlOZkErxR0C1ilWyOvK6tEYxoAA7kjKK
 
 ### 🏗️ Build Configuration
 
-The root `vercel.json` is configured to:
-- Install dependencies from `frontend/` directory
-- Build the React app with Vite
-- Serve the static files from `frontend/dist`
-- Apply security headers
+**IMPORTANT:** You must set the Root Directory in Vercel Dashboard:
+1. Go to Project Settings → Build & Development Settings
+2. Set **Root Directory** to: `frontend`
+3. Save changes
+
+The root `vercel.json` provides routing configuration:
+- Rewrites all routes to `/index.html` (SPA support)
+
+Vercel will auto-detect Vite and use:
+- Install: `npm install`
+- Build: `npm run build`
+- Output: `dist`
 
 **Note:** Only ONE `vercel.json` file exists at the root level. The duplicate in `frontend/` has been removed to prevent deployment conflicts.
 

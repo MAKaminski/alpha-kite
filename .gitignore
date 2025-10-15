@@ -1,2 +1,9 @@
 .vercel
 .env
+
+# Prevent duplicate build files in root
+/node_modules
+/package-lock.json
+/vite.config.js
+/vitest.config.js
+/dist
